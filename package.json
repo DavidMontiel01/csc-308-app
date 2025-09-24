@@ -1,0 +1,24 @@
+{
+  "name": "packages",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/DavidMontiel01/csc-308-app#readme",
+  "bugs": {
+    "url": "https://github.com/DavidMontiel01/csc-308-app/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidMontiel01/csc-308-app.git"
+  },
+  "license": "ISC",
+  "author": "david",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+  ,"workspaces":[
+	  "packages/*"
+  ]
+}
+  
