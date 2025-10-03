@@ -36,19 +36,41 @@ const users = {
 app.use(express.json());
 
 
-
 const findUserById = (id) => users["users_list"].find((user) => user["id"] === id);
 app.get("/users/:id", (req, res) => {
     const id = req.params["id"]; //or req.params.id
     let result = findUserById(id);
     if (result === undefined) {
         res.status(404).send("Resource not found.");
-    }
-    else {
+    } else {
         res.send(result);
     }
 });
 
-app.listen(port, ()=> {
+const addUser = (user) => {
+    users["users_list"].push(user);
+    return user;
+}
+
+app.post("/users", (req, res) => {
+    const userToAdd = req.body;
+    addUser(userToAdd)
+    res.send();
+});
+
+const userToDelete = (id) => {
+    let userIndex = users["users_list"].indexOf(findUserById(id));
+    if (userIndex !== 1) {
+        users["users_list"].splice(userIndex, 1);
+    }
+}
+
+app.delete("/users/:id", (req, res) => {
+    const id = req.params["id"];
+    userToDelete(id)
+    res.status(204).send("User successfully deleted");
+});
+
+app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
