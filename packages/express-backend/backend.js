@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 const app = express();
 const port = 8000;
@@ -32,8 +33,33 @@ const users = {
         }
     ]
 };
-
+app.use(cors());
 app.use(express.json());
+
+//find user by both name and job
+const findUsersbyNameAndJob =(name, job) => {
+ return users["users_list"].filter((user) => user["name"] === name && user["job"] === job);
+};
+const findUserbyName = (name) => {
+    return users["users_list"].find((user) => user["name"] === name);
+}
+
+app.get("/users", (req, res) => {
+    let name = req.query.name;
+    let job = req.query.job;
+    // if job is undefined just look for name
+    if (job === undefined ) {
+        let result = findUserbyName(name);
+        res.send(result);
+    }
+    else if (name !== undefined) { // if both name and user are defined then look for matching job and name user
+        let result = findUsersbyNameAndJob(name, job);
+        res.send(result)
+    }
+    else { //error
+        res.code(400).send("Bad request");
+    }
+})
 
 //finding Users by id
 const findUserById = (id) => users["users_list"].find((user) => user["id"] === id);
