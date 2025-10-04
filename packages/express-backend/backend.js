@@ -80,8 +80,9 @@ const addUser = (user) => {
 app.post("/users", (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd)
-    res.send();
+    res.status(201).send("Content created");
 });
+
 //deleting Users
 const userToDelete = (id) => {
     let userIndex = users["users_list"].indexOf(findUserById(id));
