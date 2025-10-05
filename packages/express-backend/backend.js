@@ -40,8 +40,40 @@ app.use(express.json());
 const findUsersbyNameAndJob =(name, job) => {
  return users["users_list"].filter((user) => user["name"] === name && user["job"] === job);
 };
+//find user by Name only
 const findUserbyName = (name) => {
     return users["users_list"].find((user) => user["name"] === name);
+}
+const findUserById = (id) => users["users_list"].find((user) => user["id"] === id);
+
+//adding new Users
+const addUser = (user) => {
+    if (!user.hasOwnProperty("id")) {
+       generateUserId(user)
+    }
+    users["users_list"].push(user);
+
+    return user;
+}
+//find user that matches certain id
+const generateUserId = (user) => {
+    user.id = Math.floor(Math.random() * 99999);
+}
+
+//deleting Users
+/**
+ * Delete a user by their id
+ * @param id The id of the user to be deleted
+ * @returns {boolean} `true` if user is successfully deleted and `false` user does not exist in database
+ */
+const userToDelete = (id) => {
+    //check if user exist in database
+    let userToDelete = users["users_list"].find((user) => user.id === id);
+    if (userToDelete === undefined) {
+        return false;
+    }
+    users["users_list"] = users["users_list"].filter((user) => user !== userToDelete);
+    return true;
 }
 
 app.get("/users", (req, res) => {
@@ -60,9 +92,7 @@ app.get("/users", (req, res) => {
         res.code(400).send("Bad request");
     }
 })
-
 //finding Users by id
-const findUserById = (id) => users["users_list"].find((user) => user["id"] === id);
 app.get("/users/:id", (req, res) => {
     const id = req.params["id"]; //or req.params.id
     let result = findUserById(id);
@@ -72,28 +102,21 @@ app.get("/users/:id", (req, res) => {
         res.send(result);
     }
 });
-//adding new Users
-const addUser = (user) => {
-    users["users_list"].push(user);
-    return user;
-}
 app.post("/users", (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd)
-    res.status(201).send("Content created");
+    res.status(201).send(userToAdd);
 });
-
-//deleting Users
-const userToDelete = (id) => {
-    let userIndex = users["users_list"].indexOf(findUserById(id));
-    if (userIndex !== 1) {
-        users["users_list"].splice(userIndex, 1);
-    }
-}
 app.delete("/users/:id", (req, res) => {
     const id = req.params["id"];
-    userToDelete(id)
-    res.status(204).send("User successfully deleted");
+    let status = userToDelete(id)
+
+    if (status) {
+        res.status(204).send("User successfully deleted");
+    }
+    else {
+        res.status(404).send("resource not found");
+    }
 });
 
 app.listen(port, () => {

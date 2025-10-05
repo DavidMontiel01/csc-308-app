@@ -6,14 +6,28 @@ export function MyApp() {
     const [characters, setCharacters] = useState([]);
 
     function removeOneCharacter(index) {
-        const updated = characters.filter((character, i) => {
-            return i !== index;
-        });
-        setCharacters(updated);
+        console.log(index)
+        let idToDelete = characters.at(index).id;
+
+        deleteUser(idToDelete).then(() => {
+                const updated = characters.filter((character, i) => {
+                    return i !== index;
+                });
+                setCharacters(updated);
+            }).catch( (error) => console.log(error));
+
+    }
+
+    function deleteUser(id) {
+        const promise = fetch(`http://localhost:8000/users/${id}`,
+            {
+                method: "DELETE"
+            })
+        return promise;
     }
 
     function fetchUsers() {
-        const promise = fetch("https://localhost:8000/users");
+        const promise = fetch("Http://localhost:8000/users");
         return promise;
     }
 
@@ -25,13 +39,13 @@ export function MyApp() {
             },
             body: JSON.stringify(person),
         });
-
         return promise;
     }
 
     function updateList(person) {
         postUser(person)
-            .then(() => setCharacters([...characters, person]))
+            .then((response) => response.json())
+            .then((user) => setCharacters([...characters, user]))
             .catch((error) => console.log(error));
     }
 
@@ -41,6 +55,7 @@ export function MyApp() {
             .then((json) => setCharacters(json["users_list"]))
             .catch((error) => { console.log(error); });
     }, []);
+
     return (
         <div className="container">
             <Table
