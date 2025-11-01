@@ -7,7 +7,7 @@ export function MyApp() {
 
     function removeOneCharacter(index) {
         console.log(index)
-        let idToDelete = characters.at(index).id;
+        let idToDelete = characters.at(index)._id;
 
         deleteUser(idToDelete).then(() => {
                 const updated = characters.filter((character, i) => {
